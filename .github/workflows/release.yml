@@ -1,0 +1,47 @@
+name: Release
+
+# Push a tag such as v1.0.0 to build the extension zip and publish it on the Releases page.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate and test
+        run: |
+          node tools/validate.js
+          node --test 'tests/*.test.js'
+
+      - name: Check that the tag matches manifest.json
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match manifest version $VERSION"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Package runtime files only
+        run: |
+          zip -r "stream-lens-${VERSION}.zip" \
+            manifest.json background.js content_main.js content_isolated.js \
+            utils popup icons -x "*.DS_Store"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "stream-lens-${VERSION}.zip" \
+            --title "StreamLens ${VERSION}" --generate-notes
