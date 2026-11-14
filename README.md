@@ -2,9 +2,10 @@
 
 网页视频画质检测浏览器插件。播放视频时，在画面右上角实时显示视频的真实参数，一眼看出是不是“假高清”。
 
-<!-- 在这里放截图：悬浮窗效果、弹窗效果 -->
-![悬浮窗效果](docs/overlay.png)
-![弹窗效果](docs/popup.png)
+<p>
+  <img src="docs/overlay.png" alt="悬浮窗效果" height="260">
+  <img src="docs/popup.png" alt="弹窗效果" height="260">
+</p>
 
 ## 功能
 
