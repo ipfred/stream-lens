@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "StreamLens",
+  "version": "1.0.0",
+  "minimum_chrome_version": "111",
+  "description": "网页视频画质侦探：自动识别网页视频的真实分辨率、帧率、码率、编码格式与丢帧率，并给出直观的画质评级。",
+  "permissions": ["storage", "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "toggle-osd": {
+      "suggested_key": {
+        "default": "Alt+Shift+V",
+        "mac": "Alt+Shift+V"
+      },
+      "description": "开启/关闭网页悬浮监控面板 (OSD)"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_main.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["utils/quality_evaluator.js", "content_isolated.js"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true,
+      "world": "ISOLATED"
+    }
+  ]
+}

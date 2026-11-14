@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>StreamLens 手动测试页</title>
+  <style>
+    body { font: 14px/1.5 -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; color: #222; }
+    h2 { margin-top: 32px; }
+    video { width: 100%; max-height: 420px; background: #000; }
+    code { background: #eee; padding: 0 4px; }
+    iframe { width: 100%; height: 340px; border: 1px solid #ccc; }
+    .hint { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>StreamLens 手动测试页</h1>
+  <p class="hint">
+    选择一个本地视频文件（MP4 / WebM）。文件不会上传，只通过 URL.createObjectURL 在本页播放。
+    扩展需要先通过 chrome://extensions 加载。若要在 file:// 页面使用，请在扩展详情页打开“允许访问文件网址”。
+  </p>
+  <p>
+    <label>选择本地视频：<input type="file" id="file" accept="video/*"></label>
+  </p>
+
+  <h2>1. 普通播放器（主页面）</h2>
+  <video id="v1" controls loop muted playsinline></video>
+
+  <h2>2. 禁止右键的播放器（oncontextmenu="return false"）</h2>
+  <video id="v2" controls loop muted playsinline oncontextmenu="return false"></video>
+
+  <h2>3. 嵌套 iframe 播放器</h2>
+  <p class="hint">
+    iframe 加载同目录的 iframe_player.html，里面有独立的视频和文件选择框。
+    Popup 应显示“Iframe 嵌套播放器”。要测试真正的跨域，请在 manual 目录运行
+    <code>python3 -m http.server 8000</code>，用 http://localhost:8000/test.html 打开本页，
+    再点击下面的按钮，把 iframe 切换到 http://127.0.0.1:8000/iframe_player.html。
+  </p>
+  <p><button type="button" id="cross">切换为跨域 iframe（127.0.0.1:8000）</button></p>
+  <iframe id="frame" src="iframe_player.html"></iframe>
+
+  <script>
+    (function () {
+      var input = document.getElementById('file');
+      var lastUrl = null;
+
+      function setSource(video, url) {
+        if (!video) return;
+        video.src = url;
+        var p = video.play();
+        if (p && p.catch) p.catch(function () { /* autoplay may be blocked, use the controls */ });
+      }
+
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (!file) return;
+        if (lastUrl) URL.revokeObjectURL(lastUrl);
+        lastUrl = URL.createObjectURL(file);
+        setSource(document.getElementById('v1'), lastUrl);
+        setSource(document.getElementById('v2'), lastUrl);
+      });
+
+      document.getElementById('cross').addEventListener('click', function () {
+        document.getElementById('frame').src = 'http://127.0.0.1:8000/iframe_player.html';
+      });
+    })();
+  </script>
+</body>
+</html>

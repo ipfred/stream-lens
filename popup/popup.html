@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>StreamLens</title>
+  <meta name="viewport" content="width=300">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="panel" id="panel">
+    <!-- Title row with the detection master switch (chrome.storage.local detectionEnabled) -->
+    <header class="top">
+      <span class="brand"><span class="logo" aria-hidden="true"></span>StreamLens</span>
+      <label class="switch-row" for="detect-toggle" title="关闭后停止检测画质，悬浮窗仅保留开关按钮">
+        <span class="switch-title">检测</span>
+        <span class="switch">
+          <input type="checkbox" id="detect-toggle" checked>
+          <span class="slider"></span>
+        </span>
+      </label>
+    </header>
+    <div class="footer-error" id="detect-error" hidden></div>
+
+    <!-- Content shown when a video is detected -->
+    <section id="content" hidden>
+      <div class="status" id="status" data-level="unknown">
+        <div class="status-label" id="status-label">--</div>
+        <div class="status-badge" id="status-badge">--</div>
+      </div>
+
+      <!-- The same three lines as the on-page HUD -->
+      <div class="info" id="card-bitrate" data-level="unknown">
+        <div class="line">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 5v14M16 5v14"/><path d="M4 10h4M4 14h4M16 10h4M16 14h4"/></svg></span>
+          <span class="value" id="info-video">--</span>
+          <span class="aspect" id="meta-aspect"></span>
+        </div>
+        <div class="line" id="info-audio-row" hidden>
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg></span>
+          <span class="value" id="info-audio">--</span>
+        </div>
+        <div class="line">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/><path d="M12 12l4-4"/><path d="M12 7v1M7 12h1M17 12h-1"/></svg></span>
+          <span class="value" id="info-rate">--</span>
+        </div>
+        <div class="bar" aria-hidden="true"><div class="bar-fill" id="bitrate-bar"></div></div>
+        <div class="note" id="rate-note" hidden></div>
+      </div>
+
+      <div class="meta">
+        <span class="meta-item"><span class="meta-key">丢帧</span><span id="drops-value">--</span></span>
+        <span class="meta-item"><span id="source-value">--</span></span>
+        <span class="tag" id="source-state" data-state="playing">--</span>
+      </div>
+    </section>
+
+    <!-- Empty state -->
+    <section class="empty" id="empty">
+      <p class="empty-text" id="empty-text">当前页面未检测到正在播放的 HTML5 视频，或视频使用 Canvas 渲染</p>
+    </section>
+
+    <!-- Footer: OSD switch -->
+    <footer class="footer">
+      <label class="switch-row" for="osd-toggle">
+        <span class="switch-text">
+          <span class="switch-title">悬浮窗</span>
+          <kbd>Alt+Shift+V</kbd>
+        </span>
+        <span class="switch">
+          <input type="checkbox" id="osd-toggle" checked>
+          <span class="slider"></span>
+        </span>
+      </label>
+      <div class="footer-error" id="osd-error" hidden></div>
+    </footer>
+  </main>
+
+  <script src="../utils/quality_evaluator.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
